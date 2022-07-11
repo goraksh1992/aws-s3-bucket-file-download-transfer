@@ -25,8 +25,8 @@ def bucket(request):
 def create_session():
     # stores configuration state and allows you to create service clients and resources.
     session = boto3.session.Session(
-        aws_access_key_id="aws_access_key_id", 
-        aws_secret_access_key="aws_secret_access_key"
+        aws_access_key_id="AKIARID5RI6WOZB7H3QN", 
+        aws_secret_access_key="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"
     )
 
     return session
