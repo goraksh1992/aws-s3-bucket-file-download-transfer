@@ -290,3 +290,62 @@ def export_data(request):
     # cursor.execute('SELECT to_jsonb(json_agg(CRICKETERS)) FROM CRICKETERS')
     # result = cursor.fetchall()
     # print(result[0][0])
+
+
+def get_table_list(request):
+    conn = connection(
+        request.POST.get('database_name'),
+        request.POST.get('username'),
+        request.POST.get('password'),
+        request.POST.get('host'),
+        request.POST.get('port')
+    )
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+        table_schema
+        , table_name
+        FROM information_schema.tables
+        WHERE
+        (
+        table_schema = 'public'
+        )
+        ORDER BY table_schema, table_name;
+    """)
+    
+
+    table_list = cursor.fetchall()
+
+    return JsonResponse({"tables": table_list})
+
+
+def get_table_list_target(request):
+    conn = connection(
+        request.POST.get('target_database_name'),
+        request.POST.get('target_username'),
+        request.POST.get('target_password'),
+        request.POST.get('target_host'),
+        request.POST.get('target_port')
+    )
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+        table_schema
+        , table_name
+        FROM information_schema.tables
+        WHERE
+        (
+        table_schema = 'public'
+        )
+        ORDER BY table_schema, table_name;
+    """)
+    
+
+    table_list = cursor.fetchall()
+
+    return JsonResponse({"tables": table_list})
+

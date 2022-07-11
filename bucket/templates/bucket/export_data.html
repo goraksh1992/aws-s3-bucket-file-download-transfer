@@ -37,13 +37,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Username </label>
-                                        <input type="text" name="username" value="username" class="form-control">
+                                        <input type="text" name="username" value="username" class="form-control username">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Password </label>
-                                        <input type="password" value="password" name="password" class="form-control">
+                                        <input type="password" value="password" name="password" class="form-control password">
                                     </div>
                                 </div>
                             </div>
@@ -51,13 +51,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Host </label>
-                                        <input type="text" value="host" name="host" class="form-control">
+                                        <input type="text" value="host" name="host" class="form-control host">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Port </label>
-                                        <input type="text" name="port" value="5432" class="form-control">
+                                        <input type="text" name="port" value="5432" class="form-control port">
                                     </div>
                                 </div>
                             </div>
@@ -65,16 +65,21 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Database Name </label>
-                                        <input type="text" name="database_name" value="db_name" class="form-control">
+                                        <input type="text" name="database_name" value="database" class="form-control source_db">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Table Name </label>
-                                        <input type="text" name="table_name" value="models" class="form-control">
+                                        <select name="table_name" id="table_name" class="form-control">
+
+                                        </select>
+                                        <!-- <input type="text" name="table_name" value="models" class="form-control"> -->
                                     </div>
                                 </div>
                             </div>
+                            <br>
+                            <div class="source_erorr_message"></div>
                         </div>
                     </div>
                 </div>
@@ -88,13 +93,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Username </label>
-                                        <input type="text" name="target_username" value="postgres" class="form-control">
+                                        <input type="text" name="target_username" value="postgres" class="form-control target_username">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Password </label>
-                                        <input type="password" name="target_password" value="Gaurav#1992" class="form-control">
+                                        <input type="password" name="target_password" value="Gaurav#1992" class="form-control target_password">
                                     </div>
                                 </div>
                             </div>
@@ -102,13 +107,13 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Host </label>
-                                        <input type="text" name="target_host" value="127.0.0.1" class="form-control">
+                                        <input type="text" name="target_host" value="127.0.0.1" class="form-control target_host">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Port </label>
-                                        <input type="text" name="target_port" value="5432" class="form-control">
+                                        <input type="text" name="target_port" value="5432" class="form-control target_port">
                                     </div>
                                 </div>
                             </div>
@@ -116,23 +121,26 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Database Name </label>
-                                        <input type="text" name="target_database_name" value="target_aws" class="form-control">
+                                        <input type="text" name="target_database_name" value="target_aws" class="form-control target_db">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label> Table Name </label>
-                                        <input type="text" name="target_table_name" value="models" class="form-control">
+                                        <select name="target_table_name" id="target_table_name" class="form-control">
+
+                                        </select>
+                                        <!-- <input type="text" name="target_table_name" value="models" class="form-control"> -->
                                     </div>
                                 </div>
                             </div>
                             <hr>
+                            <div class="target_message"></div>
                             <div class="modal-footer">
                                 <button class="btn btn-success download">
                                     Transfer Data
                                 </button>
                             </div>
-                            <div class="message"></div>
                         </div>
                     </div>
                 </div>
@@ -149,6 +157,98 @@
     <script>
         $(document).ready(function(){
             $(".pageloader").fadeOut("slow");
+
+            $(document).on('blur', '.source_db', function(){
+                $(".pageloader").fadeIn("slow");
+                if($(".source_db").val() == "" || $(".username").val() == "" || $(".password").val() == "" || $(".host").val() == "" || $(".port").val() == ""){
+                    $(".source_erorr_message").append(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            Please enter valid data
+                            <button 
+                                type="button" 
+                                class="btn-close" 
+                                data-bs-dismiss="alert" 
+                                aria-label="Close"></button>
+                        </div>
+                    `)
+                    $(".pageloader").fadeOut("slow");
+                    return
+                }
+                $.ajax({
+                    url: 'get-tables',
+                    type: "POST",
+                    data: {
+                        database_name: $(".source_db").val(),
+                        username: $(".username").val(),
+                        password: $(".password").val(),
+                        host: $(".host").val(),
+                        port: $(".port").val(),
+                        csrfmiddlewaretoken: csrftoken
+                    }
+                })
+                .done(function(data){
+                    // console.log(data);
+                    $(".pageloader").fadeOut("slow");
+                    $("#table_name option").remove()
+                    option = "<option selected disabled> Select Table </option>";
+                    $.each(data.tables, function(index, value){
+                        option += `<option value="${value['1']}">${value['1']}</option>`
+                    })
+
+                    $("#table_name").append(option)
+                })
+                .fail(function(error){
+                    $(".pageloader").fadeOut("slow");
+                    console.log(error);
+                })
+            })
+
+
+            $(document).on('blur', '.target_db', function(){
+                $(".pageloader").fadeIn("slow");
+                if($(".target_db").val() == "" || $(".target_username").val() == "" || $(".target_password").val() == "" || $(".target_host").val() == "" || $(".target_port").val() == ""){
+                    $(".target_message").append(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            Please enter valid data
+                            <button 
+                                type="button" 
+                                class="btn-close" 
+                                data-bs-dismiss="alert" 
+                                aria-label="Close"></button>
+                        </div>
+                    `)
+                    $(".pageloader").fadeOut("slow");
+                    return false;
+                }
+                $.ajax({
+                    url: 'get-tables',
+                    type: "POST",
+                    data: {
+                        database_name: $(".target_db").val(),
+                        username: $(".target_username").val(),
+                        password: $(".target_password").val(),
+                        host: $(".target_host").val(),
+                        port: $(".target_port").val(),
+                        csrfmiddlewaretoken: csrftoken
+                    }
+                })
+                .done(function(data){
+                    // console.log(data);
+                    $(".pageloader").fadeOut("slow");
+                    $("#target_table_name option").remove()
+                    option = "<option selected disabled> Select Table </option>";
+                    $.each(data.tables, function(index, value){
+                        option += `<option value="${value['1']}">${value['1']}</option>`
+                    })
+
+                    $("#target_table_name").append(option)
+                })
+                .fail(function(error){
+                    $(".pageloader").fadeOut("slow");
+                    console.log(error);
+                })
+            })
+
         })
     </script>
 </body>
