@@ -283,8 +283,9 @@ def copy_files(request):
 
 
 def export_data(request):
-    task = get_records.delay()
-    
+    if request.method == "POST":
+        task = get_records.delay(request.POST)
+        print(task)
     return render(request, 'bucket/export_data.html')
     # cursor.execute('SELECT to_jsonb(json_agg(CRICKETERS)) FROM CRICKETERS')
     # result = cursor.fetchall()
