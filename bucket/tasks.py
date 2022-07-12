@@ -29,7 +29,7 @@ def get_record(data, arg, cursor2):
 
 
 @shared_task
-def get_records(data, flag=True, start=0, end=5):
+def get_records(data, flag=True, start=0, end=1000):
     print(data['database_name'])
     try:
         if flag:
@@ -61,11 +61,11 @@ def get_records(data, flag=True, start=0, end=5):
             # Get records
             if lastId:
                 cursor.execute(f'''
-                    SELECT * FROM {data['table_name']} WHERE id > {lastId[0]} ORDER BY id DESC LIMIT {end} OFFSET {start}
+                    SELECT * FROM {data['table_name']} WHERE upload_user_id='33' AND id > {lastId[0]} ORDER BY id DESC LIMIT {end} OFFSET {start}
                 ''')
             else:
                 cursor.execute(f'''
-                    SELECT * FROM {data['table_name']} ORDER BY id DESC LIMIT {end} OFFSET {start}
+                    SELECT * FROM {data['table_name']} WHERE upload_user_id='33' ORDER BY id DESC LIMIT {end} OFFSET {start}
                 ''')
 
             result = cursor.fetchall()
