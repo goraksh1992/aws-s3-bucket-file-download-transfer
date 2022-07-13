@@ -14,5 +14,5 @@ urlpatterns = [
     # 
     path('export-data', views.export_data, name='export-data'),
     path('get-tables', views.get_table_list, name='get-tables'),
-    path('get-target-tables', views.get_table_list_target, name='get-target-tables'),
+    # path('get-target-tables', views.get_table_list_target, name='get-target-tables'),
 ]

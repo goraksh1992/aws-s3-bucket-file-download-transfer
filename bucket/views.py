@@ -284,8 +284,10 @@ def copy_files(request):
 
 def export_data(request):
     if request.method == "POST":
-        task = get_records.delay(request.POST)
-        print(task)
+        task = get_records.delay(data=request.POST)
+
+        return render(request, 'bucket/display_progress.html', context={"task_id": task.task_id})
+
     return render(request, 'bucket/export_data.html')
     # cursor.execute('SELECT to_jsonb(json_agg(CRICKETERS)) FROM CRICKETERS')
     # result = cursor.fetchall()
@@ -321,31 +323,31 @@ def get_table_list(request):
     return JsonResponse({"tables": table_list})
 
 
-def get_table_list_target(request):
-    conn = connection(
-        request.POST.get('target_database_name'),
-        request.POST.get('target_username'),
-        request.POST.get('target_password'),
-        request.POST.get('target_host'),
-        request.POST.get('target_port')
-    )
+# def get_table_list_target(request):
+#     conn = connection(
+#         request.POST.get('target_database_name'),
+#         request.POST.get('target_username'),
+#         request.POST.get('target_password'),
+#         request.POST.get('target_host'),
+#         request.POST.get('target_port')
+#     )
 
-    cursor = conn.cursor()
+#     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT
-        table_schema
-        , table_name
-        FROM information_schema.tables
-        WHERE
-        (
-        table_schema = 'public'
-        )
-        ORDER BY table_schema, table_name;
-    """)
+#     cursor.execute("""
+#         SELECT
+#         table_schema
+#         , table_name
+#         FROM information_schema.tables
+#         WHERE
+#         (
+#         table_schema = 'public'
+#         )
+#         ORDER BY table_schema, table_name;
+#     """)
     
 
-    table_list = cursor.fetchall()
+#     table_list = cursor.fetchall()
 
-    return JsonResponse({"tables": table_list})
+#     return JsonResponse({"tables": table_list})
 
