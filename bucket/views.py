@@ -13,6 +13,10 @@ from .tasks import get_records
 
 # Create your views here.
 
+def home(request):
+    
+    return render(request, 'bucket/home.html')
+
 def bucket(request):
     bucket_list = get_buckets_client()
     
