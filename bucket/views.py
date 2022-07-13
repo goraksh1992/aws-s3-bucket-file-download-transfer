@@ -1,6 +1,6 @@
 import csv
 import re
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import partial
@@ -9,7 +9,7 @@ import tqdm
 import boto3
 from botocore.exceptions import ClientError
 from common.views import connection
-from .tasks import get_records
+from .tasks import get_records, vprint_get_export_data
 
 # Create your views here.
 
@@ -327,31 +327,8 @@ def get_table_list(request):
     return JsonResponse({"tables": table_list})
 
 
-# def get_table_list_target(request):
-#     conn = connection(
-#         request.POST.get('target_database_name'),
-#         request.POST.get('target_username'),
-#         request.POST.get('target_password'),
-#         request.POST.get('target_host'),
-#         request.POST.get('target_port')
-#     )
 
-#     cursor = conn.cursor()
+def vprint_migrate_table(request, table_name):
+    vprint_get_export_data.delay(table_name)
 
-#     cursor.execute("""
-#         SELECT
-#         table_schema
-#         , table_name
-#         FROM information_schema.tables
-#         WHERE
-#         (
-#         table_schema = 'public'
-#         )
-#         ORDER BY table_schema, table_name;
-#     """)
-    
-
-#     table_list = cursor.fetchall()
-
-#     return JsonResponse({"tables": table_list})
-
+    return HttpResponse("Done")
